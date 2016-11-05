@@ -1,0 +1,50 @@
+// Problem Description
+// All Domains  Algorithms  Search  Cut the Tree
+// https://www.hackerrank.com/challenges/cut-the-tree
+
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <climits>
+#define NMAX 100000
+using namespace std;
+
+vector <int> connection[NMAX+10];
+int value[NMAX+10],sub[NMAX+10],s=0,ans=INT_MAX;
+void foo(int currentNode, int parent) {
+    // currentNode is current node number, 0 indexing
+    // parent is the parent node number of the current node
+    int curNodeConnect=connection[currentNode].size(),ret=value[currentNode];
+    // curNodeConnect is the number of connections that current node has
+    // ret is the value of the current node, but it will become the sum of all child node values
+    for(int i=0; i<curNodeConnect; i++) {
+        if (connection[currentNode][i] != parent) {
+            foo(connection[currentNode][i], currentNode);
+            ret += sub[connection[currentNode][i]];
+        }
+    }
+    if(currentNode!=0){
+        ans=min(ans,abs(s-2*ret));
+    }
+    sub[currentNode]=ret;
+    // sub is used to collect every ret value after they becoming the sum of all child node values
+}
+int main()
+{
+    int n,x,y;
+    cin >> n;
+    for(int i=0; i<n; i++){
+        cin >> value[i];
+        s+=value[i];
+    }
+    for(int i=1; i<n; i++){
+        cin >> x >> y;
+        x--,y--;
+        connection[x].push_back(y);
+        connection[y].push_back(x);
+    }
+    foo(0,-1);
+    cout << ans << endl;
+    return 0;
+}
